@@ -1,31 +1,3 @@
-# Demo KME Server code
-# run only if using DCrypt KME server
-import qkdnet
-import kme_server
-import random
-import os
-
-random.seed(os.urandom(32))
-
-qkd = qkdnet.qkdnet()
-kmes = qkd.createNodes(4)
-
-servers = dict()
-xport = 8080
-port = xport
-for kid in kmes:
-  serve = kme_server.kme_server(kid, port, qkd, 64, 'server-combo.pem', 'certs/qkd.d-crypt.com.crt')
-  servers[kid] = (('localhost', port), serve)
-  port = port + 1
-
-kmes
-
-
-
-
-
-
-
 # Demo SAE Client code
 # run to test Key Delivery API with list of SAE clients
 # Note: for test purposes, all SAE clients are on same computer
@@ -47,8 +19,8 @@ clients = dict()
 xport = 8080
 
 # connect clients to kme server:port
-# Alice
-sae_id   = 'DCrypt-QKD-Client-Alice'    # cannot be changed, because encoded in TLS cert also
+# Alice   (connect to server localhost:8080)
+sae_id   = 'DCrypt-QKD-Client-Alice'    # follow SAE_ID of TLS cert
 saes.append(sae_id)
 client = sae_client.sae_client(sae_id, kme_server_ca, 'certs/DCrypt-QKD-Client-Alice.pem')
 clients[sae_id] = client
@@ -57,8 +29,8 @@ kme_port = xport+0
 if not client.connect2((kme_addr, kme_port)):
   print('ERROR: sae ' + sae_id + ' failed to connect to kme ' + kme_addr + ':' + str(kme_port))
 
-# Bob
-sae_id   = 'DCrypt-QKD-Client-Bob'      # cannot be changed, because encoded in TLS cert also
+# Bob   (connect to server localhost:8081)
+sae_id   = 'DCrypt-QKD-Client-Bob'      # follow SAE_ID of TLS cert
 saes.append(sae_id)
 client = sae_client.sae_client(sae_id, kme_server_ca, 'certs/DCrypt-QKD-Client-Bob.pem')
 clients[sae_id] = client
@@ -67,8 +39,8 @@ kme_port = xport+1
 if not client.connect2((kme_addr, kme_port)):
   print('ERROR: sae ' + sae_id + ' failed to connect to kme ' + kme_addr + ':' + str(kme_port))
 
-# Charlie
-sae_id   = 'DCrypt-QKD-Client-Charlie'  # cannot be changed, because encoded in TLS cert also
+# Charlie   (connect to server localhost:8082)
+sae_id   = 'DCrypt-QKD-Client-Charlie'  # follow SAE_ID of TLS cert
 saes.append(sae_id)
 client = sae_client.sae_client(sae_id, kme_server_ca, 'certs/DCrypt-QKD-Client-Charlie.pem')
 clients[sae_id] = client
@@ -77,22 +49,23 @@ kme_port = xport+2
 if not client.connect2((kme_addr, kme_port)):
   print('ERROR: sae ' + sae_id + ' failed to connect to kme ' + kme_addr + ':' + str(kme_port))
 
-# Dora
-sae_id   = 'DCrypt-QKD-Client-Dora'     # cannot be changed, because encoded in TLS cert also
-saes.append(sae_id)
-client = sae_client.sae_client(sae_id, kme_server_ca, 'certs/DCrypt-QKD-Client-Dora.pem')
-clients[sae_id] = client
-kme_addr = 'localhost'
-kme_port = xport+3
-if not client.connect2((kme_addr, kme_port)):
-  print('ERROR: sae ' + sae_id + ' failed to connect to kme ' + kme_addr + ':' + str(kme_port))
+## Dora   (connect to server localhost:8083)
+#sae_id   = 'DCrypt-QKD-Client-Dora'     # follow SAE_ID of TLS cert
+#saes.append(sae_id)
+#client = sae_client.sae_client(sae_id, kme_server_ca, 'certs/DCrypt-QKD-Client-Dora.pem')
+#clients[sae_id] = client
+#kme_addr = 'localhost'
+#kme_port = xport+3
+#if not client.connect2((kme_addr, kme_port)):
+#  print('ERROR: sae ' + sae_id + ' failed to connect to kme ' + kme_addr + ':' + str(kme_port))
 
+# print list of SAE_IDs
 print(saes)
 
 
 
 
-# make random pair-wise connections
+# get keys for random pair-wise connections between SAEs
 for i in range(100):
   print('KeyAPI test ' + str(i))
   sids = random.sample(saes, 2)   # pick any 2 sae clients
