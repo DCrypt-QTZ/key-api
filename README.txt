@@ -82,7 +82,7 @@ KME Server code:
   launch_server.py      # top-level code for launching D'Crypt KME server
 
 KME Server certs:
-  server-key.pem        # un-encrypted KME server private key (3072b RSA key)
+  server-key.pem        # un-encrypted KME server private key (2048b RSA key)
   server-cert.pem       # KME server TLS certificate
   server-combo.pem      # KME server private key + TLS cert (as required by Python ssl)
  
