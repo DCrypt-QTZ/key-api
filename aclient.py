@@ -13,12 +13,12 @@ import time         # sleep
 ##########################################################################################
 
 class aclient:
-  def __init__(self, cid, server_cafile='cert.pem', client_certfile=None):
+  def __init__(self, cid, server_cafile='cert.pem', client_combofile=None):
     logg.getLogger().setLevel(logg.WARNING)
     self.client_id = cid
     self.connected = False
     self.server_cafile = server_cafile
-    self.client_certfile = client_certfile
+    self.client_combofile = client_combofile
     self.info = 'Not connected'
     self.cert = None
 
@@ -28,7 +28,7 @@ class aclient:
       logg.error('client ' + self.client_id + ' already connected')
       return True
     else:
-      self.info = 'server ' + server_addr[0] + ' port ' + str(server_addr[1])
+      self.info = server_addr[0] + ' port ' + str(server_addr[1])
       self.server_addr = server_addr
       return self.initConn()
 
@@ -37,8 +37,8 @@ class aclient:
     self.context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
     self.context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
     self.context.load_verify_locations(self.server_cafile)
-    if self.client_certfile:
-      self.context.load_cert_chain(certfile=self.client_certfile)
+    if self.client_combofile:
+      self.context.load_cert_chain(certfile=self.client_combofile)
     self.cert = None
     conn = None
     ok = False

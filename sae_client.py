@@ -32,19 +32,9 @@ class sae_client(aclient.aclient):
   keys_kw       = 'keys'
 
 
-  def __init__(self, cid, server_cafile='server-cert.pem', client_certfile='client-combo.pem'):
-    sae_ids = sae_client.getSelfID(client_certfile)
-    lid = len(sae_ids)
-    if lid:
-      if sae_ids[0] != cid:
-        logg.error('SAE ID not the same as in TLS cert!!!')
-        cid = sae_ids[0]
-      if lid > 1:
-        logg.error('>1 SAE IDs in TLS cert!!!')
-    else:
-      logg.warning('no SAE ID in TLS cert')
-    #
-    super().__init__(cid, server_cafile, client_certfile)
+  def __init__(self, cid, server_cafile='server-cert.pem', client_combofile='client-combo.pem'):
+    # should check SAE_ID in tls cert...
+    super().__init__(cid, server_cafile, client_combofile)
 
   # check KME_ID in cert here
   def getSelfID(cert):
