@@ -60,7 +60,7 @@ class aserver:
         #
         client_cert = conn.getpeercert()
         cipher = conn.cipher()
-        logg.warning('TLS connected to client ' + info + ' using ' + str(cipher))
+        logg.warning('TLS connected to ' + info + ' using ' + str(cipher))
         ok = self.regCert(client_cert, conn)
         if ok:
           mt = threading.Thread(target=self.serve, args=(conn,))

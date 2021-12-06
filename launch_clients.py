@@ -67,6 +67,10 @@ print(saes)
 
 # get keys for random pair-wise connections between SAEs
 for i in range(100):
+  # wait 2s between requests
+  print('')
+  time.sleep(2.0)
+  #
   print('KeyAPI test ' + str(i))
   sids = random.sample(saes, 2)   # pick any 2 sae clients
   it = iter(sids)
@@ -109,7 +113,4 @@ for i in range(100):
       print(keys3)
   else:
     print('  ERROR: failed to getkey!')
-  # wait 2s between requests
-  print('')
-  time.sleep(2.0)
   

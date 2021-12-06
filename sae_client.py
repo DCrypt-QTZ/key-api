@@ -33,10 +33,10 @@ class sae_client(aclient.aclient):
 
 
   def __init__(self, cid, server_cafile='server-cert.pem', client_combofile='client-combo.pem'):
-    # should check SAE_ID in tls cert...
+    # should check SAE_ID in our own tls cert...
     super().__init__(cid, server_cafile, client_combofile)
 
-  # check KME_ID in cert here
+  # check SAE_ID in our own cert here
   def getSelfID(cert):
     sae_ids = list()
     if cert:
@@ -54,7 +54,7 @@ class sae_client(aclient.aclient):
         None
     return sae_ids
 
-  # check KME_ID in cert here
+  # check KME_ID in KME cert here
   def getID(self, cert):
     kme_ids = list()
     if cert:
@@ -73,9 +73,12 @@ class sae_client(aclient.aclient):
     return kme_ids
 
 
-  # register with kme server
+  # function to register with kme server
   # tell kme our sae_id
   # client gets kme_id
+  #
+  # Extension to Key Delivery API!
+  # NOT STANDARD!
   def register(self):
     status = 400
     self.kme_id = None
@@ -93,13 +96,14 @@ class sae_client(aclient.aclient):
       logg.info('recv ' + str(len(recv)))
       logg.debug(recv)
     except Exception as e:
-      logg.error('bad ' + self.info)
+      logg.error('register: ' + fmt + ' ' + url + ' ' + str(params))
+      logg.error('KME: ' + self.info)
       logg.error(e)
     return (status, self.kme_id)
 
 
   # connect to server
-  # we check KME_ID in cert here
+  # we check for KME_ID in cert here
   def initConn(self):
     ok = super().initConn()
     self.kme_id = None
@@ -116,7 +120,8 @@ class sae_client(aclient.aclient):
     elif lid > 1:
       errmsg = '>1 KME ID in cert! ' + str(kme_ids)
     else:
-      errmsg = 'registered to KME ID ' + kme_id
+      self.kme_id = kme_ids[0]
+      errmsg = 'registered to KME ID ' + self.kme_id
       ok = True
     logg.warning(errmsg)
     return ok
@@ -145,7 +150,8 @@ class sae_client(aclient.aclient):
       if status == 200:
         kme_status = params
     except Exception as e:
-      logg.error('bad ' + self.info)
+      logg.error('getstatus: ' + fmt + ' ' + url + ' ' + str(params))
+      logg.error('KME: ' + self.info)
       logg.error(e)
     return (status, kme_status)
 
@@ -191,7 +197,8 @@ class sae_client(aclient.aclient):
             if keyid and keyval:
               keys[keyid] = keyval
     except Exception as e:
-      logg.error('bad ' + self.info)
+      logg.error('getkey: ' + fmt + ' ' + url + ' ' + str(params))
+      logg.error('KME: ' + self.info)
       logg.error(e)
     return (status, keys)
 
@@ -234,7 +241,8 @@ class sae_client(aclient.aclient):
             if keyid and keyval:
               keys[keyid] = keyval
     except Exception as e:
-      logg.error('bad ' + self.info)
+      logg.error('getkeywid: ' + fmt + ' ' + url + ' ' + str(params))
+      logg.error('KME: ' + self.info)
       logg.error(e)
     return (status, keys)
 

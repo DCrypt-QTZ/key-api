@@ -1,7 +1,5 @@
 import socket
 import ssl
-#import threading
-#from threading import Lock
 
 import logging as logg
 import time         # sleep
@@ -28,7 +26,7 @@ class aclient:
       logg.error('client ' + self.client_id + ' already connected')
       return True
     else:
-      self.info = server_addr[0] + ' port ' + str(server_addr[1])
+      self.info = 'server ' + server_addr[0] + ' port ' + str(server_addr[1])
       self.server_addr = server_addr
       return self.initConn()
 
@@ -53,10 +51,8 @@ class aclient:
       #
       self.cert = self.conn.getpeercert()
       self.cipher = self.conn.cipher()
-      logg.warning('TLS connected to server ' + self.info + ' using ' + str(self.cipher))
+      logg.warning('TLS connected to ' + self.info + ' using ' + str(self.cipher))
       #
-      #self.thread = threading.Thread(target=self.exec)
-      #self.thread.start()
       ok = True
     except ssl.SSLError as e:
       logg.error('SSL ERR')
@@ -66,29 +62,9 @@ class aclient:
     except Exception as e:
       logg.error('bad ' + self.info)
       logg.error(e)
-    #finally:
-    #  self.connection.close()
     return ok
 
 
-  # fake client action
-  def exec(self):
-    try:
-      for i in range(10):
-        time.sleep(1.0)
-        tosend = self.client_id + ' hello hello ' + str(i)
-        logg.info('send ' + str(len(tosend)))
-        logg.debug(tosend)
-        self.conn.send(tosend.encode())
-        recv = self.conn.recv().decode()
-        logg.info('recv ' + str(len(recv)))
-        logg.debug(recv)
-    finally:
-      self.conn.close()
-      self.connected = False
-      logg.warning('disconnected from ' + self.info)
-      self.cert = None
-      
   # disconnect from server
   def disconnect(self):
     if self.connected:
