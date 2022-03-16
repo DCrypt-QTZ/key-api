@@ -266,6 +266,8 @@ class sae_client(aclient.aclient):
     tosend += ' ' + self.http_ver + '\r\n'
     if fmt == 'POST':
       tosend += self.content_kw + ' ' + self.json_kw + '\r\n'
+    # Host header is REQUIRED; host is server addr/port
+    tosend += 'Host: ' + self.server_addr[0] + ':' + str(self.server_addr[1]) + '\r\n'   # Host
     tosend += self.accept_kw + ' ' + self.json_kw + '\r\n'      # Accept
     tosend += '\r\n'
     if fmt == 'POST':
